@@ -13,21 +13,10 @@ export class TasksService {
     @InjectRepository(TaskRepository)
     private taskRepository: TaskRepository
   ) {}
-  // private tasks: Task[] = []
-  // getAllTasks(): Task[] {
-  //   return this.tasks
-  // }
-  // getTasksWithFilter(filterDto: GetTasksFilterDto): Task[] {
-  //   const {status, search} = filterDto
-  //   const containsSearchTerm = contains(search)
-  //   return this.tasks.filter(
-  //     task =>
-  //       (status && task.status === status) ||
-  //       (search &&
-  //         (containsSearchTerm(task.description) ||
-  //           containsSearchTerm(task.title)))
-  //   )
-  // }
+
+  async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.taskRepository.getTasks(filterDto)
+  }
 
   async getTaskById(id: number): Promise<Task> {
     const found = await this.taskRepository.findOne(id)
@@ -42,11 +31,11 @@ export class TasksService {
     return this.taskRepository.remove(found)
   }
 
-  // updateTaskStatus(id: string, status: TaskStatus): Task {
-  //   const task = this.getTask(id)
-  //   task.status = status
-  //   return task
-  // }
+  async updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
+    const task = await this.getTaskById(id)
+    task.status = status
+    return task.save()
+  }
 
   async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     return this.taskRepository.createTask(createTaskDto)

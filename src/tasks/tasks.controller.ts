@@ -15,7 +15,6 @@ import {TasksService} from './tasks.service'
 import {TaskStatus} from './task-status.enum'
 import {CreateTaskDto} from './dto/create-task.dto'
 import {GetTasksFilterDto} from './dto/get-tasks-filter.dto'
-import {isEmpty} from 'ramda'
 import {TaskStatusValidationPipe} from './pipes/task-status-validation.pipe'
 import {Task} from './task.entity'
 
@@ -23,14 +22,12 @@ import {Task} from './task.entity'
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
-  // @Get()
-  // getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {
-  //   if (!isEmpty(filterDto)) {
-  //     return this.tasksService.getTasksWithFilter(filterDto)
-  //   }
-
-  //   return this.tasksService.getAllTasks()
-  // }
+  @Get()
+  async getTasks(
+    @Query(ValidationPipe) filterDto: GetTasksFilterDto
+  ): Promise<Task[]> {
+    return this.tasksService.getTasks(filterDto)
+  }
 
   @Get('/:id')
   async getTask(@Param('id', ParseIntPipe) id: number): Promise<Task> {
@@ -42,13 +39,13 @@ export class TasksController {
     return this.tasksService.deleteTask(id)
   }
 
-  // @Patch('/:id/status')
-  // updateTaskStatus(
-  //   @Param('id') id: string,
-  //   @Body('status', TaskStatusValidationPipe) status: TaskStatus
-  // ): Task {
-  //   return this.tasksService.updateTaskStatus(id, status)
-  // }
+  @Patch('/:id/status')
+  async updateTaskStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('status', TaskStatusValidationPipe) status: TaskStatus
+  ): Promise<Task> {
+    return this.tasksService.updateTaskStatus(id, status)
+  }
 
   @Post()
   @UsePipes(ValidationPipe)
