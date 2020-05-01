@@ -31,7 +31,6 @@ export class TaskRepository extends Repository<Task> {
       )
     }
 
-    const tasks = await query.getMany()
-    return tasks
+    return query.getMany()
   }
 }
