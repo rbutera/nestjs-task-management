@@ -7,20 +7,22 @@ import {
   Delete,
   Patch,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common'
 import {TasksService} from './tasks.service'
-import {Task} from './task.model'
+import {Task, TaskStatus} from './task.model'
 import {CreateTaskDto} from './dto/create-task.dto'
-import {UpdateTaskStatusDto} from './dto/update-task-status.dto'
 import {GetTasksFilterDto} from './dto/get-tasks-filter.dto'
 import {isEmpty} from 'ramda'
+import {TaskStatusValidationPipe} from './pipes/task-status-validation.pipe'
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
+  getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {
     if (!isEmpty(filterDto)) {
       return this.tasksService.getTasksWithFilter(filterDto)
     }
@@ -41,12 +43,13 @@ export class TasksController {
   @Patch('/:id/status')
   updateTaskStatus(
     @Param('id') id: string,
-    @Body() updateTaskStatusDto: UpdateTaskStatusDto
+    @Body('status', TaskStatusValidationPipe) status: TaskStatus
   ): Task {
-    return this.tasksService.updateTaskStatus(id, updateTaskStatusDto)
+    return this.tasksService.updateTaskStatus(id, status)
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createTask(@Body() createTaskDto: CreateTaskDto): Task {
     return this.tasksService.createTask(createTaskDto)
   }
