@@ -2,7 +2,6 @@ import {Injectable, NotFoundException} from '@nestjs/common'
 import {Task, TaskStatus} from './task.model'
 import {v1 as uuid} from 'uuid'
 import {CreateTaskDto} from './dto/create-task.dto'
-import {UpdateTaskStatusDto} from './dto/update-task-status.dto'
 import {GetTasksFilterDto} from './dto/get-tasks-filter.dto'
 import {contains} from 'ramda'
 
@@ -39,8 +38,7 @@ export class TasksService {
     this.tasks = this.tasks.filter(task => task.id !== found.id)
   }
 
-  updateTaskStatus(id: string, updateTaskStatusDto: UpdateTaskStatusDto): Task {
-    const {status} = updateTaskStatusDto
+  updateTaskStatus(id: string, status: TaskStatus): Task {
     const task = this.getTask(id)
     task.status = status
     return task
